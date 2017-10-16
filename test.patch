@@ -1,0 +1,30 @@
+diff --git a/lib/webrick/server.rb b/lib/webrick/server.rb
+index a8c86fb..2d67827 100644
+--- a/lib/webrick/server.rb
++++ b/lib/webrick/server.rb
+@@ -295,17 +295,15 @@ module WEBrick
+           end
+           if sock.respond_to?(:sync_close=) && @config[:SSLStartImmediately]
+             WEBrick::Utils.timeout(@config[:RequestTimeout]) do
+-              ret = sock.accept_nonblock(exception: false)
+-              case ret
+-              when :wait_readable
+-                t = IO.select([sock.to_io])
+-                t.is_a?(Array) ? t[0] : nil
+-              when :wait_writeable
+-                t = IO.select(nil, [sock.to_io])
+-                t.is_a?(Array) ? t[0] : nil
++
++              # we must call OpenSSL::SSL::SSLSocket#accept_nonblock until
++              # it stop returning wait_* symbols:
++              case ret = sock.accept_nonblock(exception: false)
++              when :wait_readable, :wait_writable
++                sock.to_io.__send__(ret)
+               else
+-                ret
+-              end
++                break
++              end while true
+             end
+           end
+           call_callback(:AcceptCallback, sock)
