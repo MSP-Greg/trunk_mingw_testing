@@ -1,7 +1,7 @@
-diff --git a/lib/webrick/server.rb b/lib/webrick/server.rb
+diff --git a/lib/ruby/2.5.0/webrick/server.rb b/lib/ruby/2.5.0/webrick/server.rb
 index a8c86fb..2d67827 100644
---- a/lib/webrick/server.rb
-+++ b/lib/webrick/server.rb
+--- a/lib/ruby/2.5.0/webrick/server.rb
++++ b/lib/ruby/2.5.0/webrick/server.rb
 @@ -295,17 +295,15 @@ module WEBrick
            end
            if sock.respond_to?(:sync_close=) && @config[:SSLStartImmediately]

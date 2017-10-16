@@ -21,10 +21,15 @@ build: off
 
 deploy: off
   
-  install:
-  - cd C:\ruby
-  - C:\msys64\usr\bin\patch  -p1 -N --no-backup-if-mismatch -i C:\projects\trunk_mingw_testing\test.patch 
+install:
+  # Put patches for build in trunk.patch
+  - cd C:\ruby_trunk
+  - C:\msys64\usr\bin\patch  -p1 -N --no-backup-if-mismatch -i \projects\trunk-mingw-testing\trunk.patch
+  # Put patches for testing in testing.patch
+#  - cd C:\ruby_trunk
+#  - C:\msys64\usr\bin\patch  -p1 -N --no-backup-if-mismatch -i \projects\trunk-mingw-testing\testing.patch
 
 test_script:
   - cd C:\ruby\test
   - ruby -v --disable-gems runner.rb -v -I./lib --show-skip webrick/test_ssl_server.rb
+  - ruby -v --disable-gems runner.rb -v -I./lib --show-skip net/http/test_https.rb
