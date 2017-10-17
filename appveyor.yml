@@ -31,5 +31,5 @@ install:
 
 test_script:
   - cd C:\ruby\test
-  - ruby -v --disable-gems runner.rb -v -I./lib --show-skip webrick/test_ssl_server.rb
+  - ruby -v --disable-gems runner.rb -v -I./lib --show-skip webrick/test_*.rb
   - ruby -v --disable-gems runner.rb -v -I./lib --show-skip net/http/test_https.rb

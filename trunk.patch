@@ -1,8 +1,8 @@
-diff --git a/lib/ruby/2.5.0/webrick/server.rb b/lib/ruby/2.5.0/webrick/server.rb
-index a8c86fb..2d67827 100644
+diff --git a/lib/ruby/2.5.0/webrick/server.rb b/lib/ruby/2.5.0/webrick/server_loco.rb
+index a8c86fb..9896e83 100644
 --- a/lib/ruby/2.5.0/webrick/server.rb
-+++ b/lib/ruby/2.5.0/webrick/server.rb
-@@ -295,17 +295,15 @@ module WEBrick
++++ b/lib/ruby/2.5.0/webrick/server_loco.rb
+@@ -295,17 +295,17 @@ module WEBrick
            end
            if sock.respond_to?(:sync_close=) && @config[:SSLStartImmediately]
              WEBrick::Utils.timeout(@config[:RequestTimeout]) do
@@ -14,12 +14,14 @@ index a8c86fb..2d67827 100644
 -              when :wait_writeable
 -                t = IO.select(nil, [sock.to_io])
 -                t.is_a?(Array) ? t[0] : nil
-+
++              
 +              # we must call OpenSSL::SSL::SSLSocket#accept_nonblock until
-+              # it stop returning wait_* symbols:
++              # it stop returning wait_* symbols
++              # accept_nonblock can only be called once on Windows
 +              case ret = sock.accept_nonblock(exception: false)
 +              when :wait_readable, :wait_writable
 +                sock.to_io.__send__(ret)
++                break if /mingw|mswin/ =~ RUBY_PLATFORM
                else
 -                ret
 -              end
