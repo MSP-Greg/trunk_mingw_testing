@@ -8,7 +8,7 @@ init:
   - set OPENSSL_CONF=
   - set OPENSSL_DIR=
   # Minimize path so bash conflicts don't arise
-  - set base_path=C:\ruby24-x64\bin;C:\Program Files\7-Zip;C:\Program Files\AppVeyor\BuildAgent;C:\Program Files\Git\cmd;C:\Windows\system32;C:\Program Files;C:\Windows
+  - set base_path=C:\Program Files\7-Zip;C:\Program Files\AppVeyor\BuildAgent;C:\Program Files\Git\cmd;C:\Windows\system32;C:\Program Files;C:\Windows
   - git clone -q --depth=5 --no-tags --branch=trunk https://github.com/ruby/ruby.git C:\ruby
   - appveyor DownloadFile https://ci.appveyor.com/api/projects/MSP-Greg/ruby-loco/artifacts/ruby_trunk.7z -FileName C:/ruby_trunk.7z
   - 7z x C:/ruby_trunk.7z -oC:/ruby_trunk
@@ -22,14 +22,12 @@ build: off
 deploy: off
   
 install:
-  # Put patches for build in trunk.patch
-  - cd C:\ruby_trunk
-  - C:\msys64\usr\bin\patch  -p1 -N --no-backup-if-mismatch -i \projects\trunk-mingw-testing\trunk.patch
-  # Put patches for testing in testing.patch
-#  - cd C:\ruby_trunk
-#  - C:\msys64\usr\bin\patch  -p1 -N --no-backup-if-mismatch -i \projects\trunk-mingw-testing\testing.patch
+  # Put patches for test lib changes
+  - cd C:\ruby
+  - C:\msys64\usr\bin\patch  -p1 -N --no-backup-if-mismatch -i \projects\trunk-mingw-testing\patches\test-class_renames.patch
+  - C:\msys64\usr\bin\patch  -p1 -N --no-backup-if-mismatch -i \projects\trunk-mingw-testing\patches\test-lib.patch
 
 test_script:
   - cd C:\ruby\test
-  - ruby -v --disable-gems runner.rb -v -I./lib --show-skip webrick/test_*.rb
-  - ruby -v --disable-gems runner.rb -v -I./lib --show-skip net/http/test_https.rb
+  - ruby --disable-gems runner.rb -I./lib -j2 -a --job-status=normal --subprocess-timeout-scale=1.5 --show-skip --retry openssl
+  - ruby -v
